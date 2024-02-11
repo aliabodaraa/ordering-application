@@ -17,15 +17,17 @@ const server = http.createServer((req,res)=>{
             console.log(chunk)
             body.push(chunk)
         })
-        req.on('end',()=>{// Cannot set headers after they are sent to the client
-           const parseBody=Buffer.concat(body).toString()
+        return req.on('end',()=>{
+            const parseBody=Buffer.concat(body).toString()
            const message = parseBody.split('=')[1]
-           fs.writeFileSync('message.txt',message)//block execution of the next kines of code unit this file done
-           res.statusCode=302
-           res.setHeader('Location','/')
-           return res.end()
+           fs.writeFile('message.txt',message,(err)=>{//nodejs event driven architecture you basically tell nodejs go ahead and load the process to OS in terms uses muli threads then continue event loop and listening to event callback and come back once the operation done by OS
+            //this code will be executed when we done parsing the request and writing the file
+            res.statusCode=302
+            res.setHeader('Location','/')
+            return res.end()
+           })
         })
-        res.setHeader('Content-Type','text/html');//we should not reach to here !!
+        res.setHeader('Content-Type','text/html');
         res.write('<html>')
         res.write('<head><title>My First Page</title></head>')
         res.write('<body><h1>Hello Form My Node.js Server !</h1></body>')
