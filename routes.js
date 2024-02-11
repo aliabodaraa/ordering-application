@@ -6,8 +6,9 @@ const requestHandler=(req, res)=>{
     if(url =='/'){
         res.write('<html>')
         res.write('<head><title>Enter Message</title></head>')
-        res.write('<body><form action="/message" method="POST"><input type="text" name="message"></form></body>')
+        res.write('<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Submit</button></form></body>')
         res.write('</html>')
+        return res.end();
     }
     if(url==="/message" && method==="POST"){
         const body=[]
@@ -25,13 +26,13 @@ const requestHandler=(req, res)=>{
             return res.end()
            })
         })
-        res.setHeader('Content-Type','text/html');
-        res.write('<html>')
-        res.write('<head><title>My First Page</title></head>')
-        res.write('<body><h1>Hello Form My Node.js Server !</h1></body>')
-        res.write('</html>')
-        res.end()
     }
+    res.setHeader('Content-Type','text/html');
+    res.write('<html>')
+    res.write('<head><title>My First Page</title></head>')
+    res.write('<body><h1>Hello Form My Node.js Server !</h1></body>')
+    res.write('</html>')
+    res.end()
 }
 //1 way
 //module.exports=requestHandler
