@@ -1,18 +1,20 @@
 
-const express=require('express')
+const express=require('express');
+const bodyParser=require('body-parser');
 const app=express(); //create express app
 
-app.use((req,res,next)=>{
-    console.log("In The First Middleware");
-    next();//allow the request to continue to the next middleware in line
+app.use(bodyParser.urlencoded({extended:false}))//return function has next() inside, it won't parse all kinds of possible bodies only bodies that send throw a form
+app.use('/',(req,res,next)=>{
+    console.log("This Always Runc !");
+    next();
 })
-app.use((req,res,next)=>{
-    console.log("In The Second Middleware");
-    res.send('<h1>Hello from Express !</h1>');//it make add content-type:text/html automatically and stop do anything in any next middleware
+app.use('/add-product',(req,res,next)=>{
+    res.send('<form action="/product" method="POST"><input type="text" name="title"><button type="submit">Add Product</button></form>');
 })
-// const server = http.createServer(app)
-// server.listen(3000,()=>{
-//     console.log("Server Is Listening Now To 3000 Port")
-// })
-//instead
+app.use("/product",(req,res,next)=>{
+    console.log(req.body);//becasue request doesطnt try to parse the incoming response ,so we need to register middleware(parser) and use third-party library called 'body-parser'
+
+    res.redirect('/');
+})
+
 app.listen(3000)
