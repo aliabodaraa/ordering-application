@@ -10,7 +10,7 @@ const shopRoutes = require('./routes/shop')
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static(path.join(rootPath,'public')));//express here will forward any request that tries to find '.css,.js' to public folder, allow some of them to access files system
-app.use("/admin",adminRoutes);
+app.use("/admin",adminRoutes.routers);
 app.use(shopRoutes);
 
 app.use((req,res,next)=>{
