@@ -1,12 +1,26 @@
-
-const express=require('express');
-const bodyParser=require('body-parser');
-const app=express();
+const express = require('express')
+const app = express()
+const testDoc = require('./routes/testDoc')
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
 
-app.use(bodyParser.urlencoded({extended:false}))//return function has next() inside, it won't parse all kinds of possible bodies only bodies that send throw a form
 app.use(adminRoutes);
 app.use(shopRoutes);
+app.use(testDoc);
+
+app.use(( req, res, next) => {
+    console.log("medium admin destination")
+    next()
+})
+app.use('/admin',( req, res, next) => {
+    console.log("second admin destination")
+    res.send("last admin destination --go to log to makesense the next('router')")
+})
+app.use(( req, res, next) => {
+    console.log("11111")
+})
+app.use('/admin',( req, res, next) => {
+    console.log("222222222")
+})
 
 app.listen(3000)
