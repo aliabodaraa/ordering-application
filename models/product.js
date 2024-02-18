@@ -20,6 +20,12 @@ const getProductsFromFile = cb => {
   });
 };
 
+const setProductsToFile = products => {
+  fs.writeFile(path_, JSON.stringify(products), err => {
+    console.log(err);
+  });
+}
+
 module.exports = class Product {
   constructor(title, imageUrl, description, price) {
     this.title = title;
@@ -31,9 +37,7 @@ module.exports = class Product {
   save() {
     getProductsFromFile(products => {
       products.push(this);
-      fs.writeFile(path_, JSON.stringify(products), err => {
-        console.log(err);
-      });
+      setProductsToFile(products);
     });
   }
 
