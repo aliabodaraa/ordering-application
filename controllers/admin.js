@@ -13,8 +13,7 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  console.log(req.user,"------------------")
-  Product.create({
+  req.user.createProduct({//this method provided in user due to the relation one to many that we would setup between User and Product in app.js 
     title,
     price,
     imageUrl,
