@@ -10,6 +10,8 @@ const sequelize = require('./utils/database');
 //apply the relationships
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart')
+const CartItem = require('./models/cart-item')
 
 const app = express();
 
@@ -33,8 +35,18 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+//relationships
+//1. Product - User
 Product.belongsTo(User,{constraints:true, onDelete:'CASCADE'});
 User.hasMany(Product);
+
+//2. User - Cart
+User.hasOne(Cart)
+Cart.belongsTo(User)
+
+//3. Cart - Product
+Cart.belongsToMany(Product, {through : CartItem})
+Product.belongsToMany(Cart, {through : CartItem})
 
 // sequelize.sync({force:true}).
 
@@ -47,6 +59,9 @@ then(result=>{
     return user
 })
 .then(user=>{
-    console.log(user)
+    console.log(user);
+    return user.createCart();
+}).then(cart=>{
+    console.log(cart);
     app.listen(3000);
 }).catch(err=>console.log(err));  //look at all the models that you defined and then create tables for them
