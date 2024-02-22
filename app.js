@@ -10,8 +10,10 @@ const sequelize = require('./utils/database');
 //apply the relationships
 const Product = require('./models/product');
 const User = require('./models/user');
-const Cart = require('./models/cart')
-const CartItem = require('./models/cart-item')
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 const app = express();
 
@@ -48,7 +50,15 @@ Cart.belongsTo(User)
 Cart.belongsToMany(Product, {through : CartItem})
 Product.belongsToMany(Cart, {through : CartItem})
 
-// sequelize.sync({force:true}).
+//3. Order - User
+Order.belongsTo(User)
+User.hasMany(Order);
+
+//3. Order - Product
+Order.belongsToMany(Product, {through : OrderItem})
+Product.belongsToMany(Order, {through : OrderItem})
+
+// sequelize.sync({force:true}).    //reconsidering the relationship that we newly setup
 
 sequelize.sync().
 then(result=>{
