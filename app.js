@@ -56,7 +56,7 @@ User.hasMany(Order);
 
 //3. Order - Product
 Order.belongsToMany(Product, {through : OrderItem})
-Product.belongsToMany(Order, {through : OrderItem})
+// Product.belongsToMany(Order, {through : OrderItem})
 
 // sequelize.sync({force:true}).    //reconsidering the relationship that we newly setup
 
