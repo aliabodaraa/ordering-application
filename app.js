@@ -55,8 +55,8 @@ Order.belongsTo(User)
 User.hasMany(Order);
 
 //3. Order - Product
-Order.belongsToMany(Product, {through : OrderItem})
-// Product.belongsToMany(Order, {through : OrderItem})
+Order.belongsToMany(Product, {through : OrderItem}) //make you call `order.getProducts()` 
+Product.belongsToMany(Order, {through : OrderItem}) //make you call `product.getOrders()` 
 
 // sequelize.sync({force:true}).    //reconsidering the relationship that we newly setup
 
@@ -69,9 +69,9 @@ then(result=>{
     return user
 })
 .then(user=>{
-    console.log(user);
+    // console.log(user);
     return user.createCart();
 }).then(cart=>{
-    console.log(cart);
+    // console.log(cart);
     app.listen(3000);
 }).catch(err=>console.log(err));  //look at all the models that you defined and then create tables for them

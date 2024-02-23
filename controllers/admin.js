@@ -90,13 +90,27 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
+  let orders;
   Product.findByPk(prodId)
     .then(product => {
+      orders=product.getOrders();//save order to test nullability of it after remove the product
       return product.destroy();
+    })
+    .then(res=>{
+      console.log(res,"res")
+        return orders.then(orders=>{//look to the orders that the product belongs to them and delete any of them that becomes empty
+          orders.forEach(order=>
+            order.getProducts()
+            .then(prods=>{
+              if(!prods.length)
+                return order.destroy();
+            })
+          )
+        })
     })
     .then(result => {
       console.log('DESTROYED PRODUCT');
-      res.redirect('/admin/products');
+      return res.redirect('/admin/products');
     })
     .catch(err => console.log(err));
 };
