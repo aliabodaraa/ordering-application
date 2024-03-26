@@ -11,7 +11,7 @@ class Product{
 
   save(){
     const db = getDb();
-    db.collection('products').insertOne(this)
+    return db.collection('products').insertOne(this)
     .then(result=>{
       console.log(result)
     })
@@ -19,7 +19,7 @@ class Product{
       console.log(err)
     })
   }
-  
+
 }
 
 module.exports = Product;
