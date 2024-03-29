@@ -8,16 +8,16 @@ const errorController = require('./controllers/error');
 const app = express();
 
 const mongoConnect = require('./utils/database').mongoconnect;
+const User =require('./models/user');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use((req,res,next)=>{
-    // User.findByPk(1).then(user=>{
-    //     req.user=user;
-    //     next();
-    // });
-    next();
+    User.findById("6606bee0a8f74c25d72cbef7").then(user=>{
+        req.user=user;
+        next();
+    }).catch(err=>console.log(err));
 })
 
 const adminRoutes = require('./routes/admin');
