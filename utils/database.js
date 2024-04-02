@@ -1,8 +1,8 @@
 const {MongoClient}=require('mongodb');
-const ins_MongoClient=new MongoClient("mongodb://localhost:27017")
+const ins_mongo_client=new MongoClient("mongodb://localhost:27017")
 let _db;
 const mongoconnect = (callback)=>{
-    ins_MongoClient.connect()
+    ins_mongo_client.connect()
     .then(client=>{
         callback()
         _db=client.db()

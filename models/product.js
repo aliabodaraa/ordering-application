@@ -36,7 +36,7 @@ class Product{
     return db.collection('products').find()
     .toArray()
     .then(result=>{
-      console.log(result)
+      // console.log("--result--",result)
       return result
     })
     .catch(err=>{
