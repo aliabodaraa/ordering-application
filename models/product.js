@@ -64,6 +64,7 @@ class Product{
     .then(result=>{
       console.log(result)
       console.log("DELETED PRODUCT PROCESS ENDS SUCCESSFULLY")
+      return result;
     })
     .catch(err=>{
       console.log(err)

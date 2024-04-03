@@ -16,6 +16,7 @@ app.set('views', 'views');
 app.use((req,res,next)=>{
     User.findById("660a6a502d1a19941c53257b").then(user=>{
         req.user=new User(user.name, user.email, user.cart, user._id);
+        console.log(user,"HEREEEEEEE")
         next();
     }).catch(err=>console.log(err));
 })

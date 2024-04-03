@@ -78,24 +78,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  let orders;
   Product.deleteById(prodId)
-    .then(product => {
-      orders=product.getOrders();
-      return product.destroy();
-    })
-    .then(res=>{
-      console.log(res,"res")
-        return orders.then(orders=>{
-          orders.forEach(order=>
-            order.getProducts()
-            .then(prods=>{
-              if(!prods.length)
-                return order.destroy();
-            })
-          )
-        })
-    })
     .then(result => {
       console.log('DESTROYED PRODUCT');
       return res.redirect('/admin/products');
