@@ -18,19 +18,36 @@ class User {
   getCart(){
     const db=getDB();
     const productIds=this.cart.items.map(item=>item.productId);
+    // this.setItemsCart(productIds);
     return db.collection('products')
            .find({_id:{$in:productIds}})
            .toArray()
            .then(products=>{
-              return products.map(p=>{
+            if(!products.length)
+              this.clearCardItemsForDeletedProducts(productIds,null)
+
+              return products.map(product=>{
+                this.clearCardItemsForDeletedProducts(productIds,product._id)
                   return {
-                    ...p,
-                    quantity:this.cart.items.find(pro=>pro.productId.toString()===p._id.toString()).quantity
+                    ...product,
+                    quantity:this.cart.items.find(pro=>pro.productId.toString()===product._id.toString()).quantity
                   }
               })
            });
   }
 
+  clearCardItemsForDeletedProducts(cartProductIds,productId){
+    if(!productId){
+      cartProductIds.forEach(proId => {
+        this.deleteItemFromCart(proId)
+      });
+      return;
+    }
+    let isProductExist=cartProductIds.some(proId => proId.toString()===productId.toString());
+    if(!isProductExist){
+      this.deleteItemFromCart(productId)
+    }
+  }
   addToCart(product){
     console.log(this.cart,"this.cart")
     const cartProductIndex=this.cart.items.findIndex(cp=>{
