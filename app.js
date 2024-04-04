@@ -12,13 +12,13 @@ const User =require('./models/user');
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-app.use((req,res,next)=>{
-    User.findById("660a6a502d1a19941c53257b").then(user=>{
-        req.user=new User(user.name, user.email, user.cart, user._id);
-        console.log(user,"HEREEEEEEE")
-        next();
-    }).catch(err=>console.log(err));
-})
+// app.use((req,res,next)=>{
+//     User.findById("660a6a502d1a19941c53257b").then(user=>{
+//         req.user=new User(user.name, user.email, user.cart, user._id);
+//         console.log(user,"HEREEEEEEE")
+//         next();
+//     }).catch(err=>console.log(err));
+// })
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -31,7 +31,7 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoose.connect("mongodb://localhost:27017")
+mongoose.connect("mongodb://localhost:27017/mongoose_test")
 .then((res)=>{
     console.log("Connnected...")
     app.listen(3000);
