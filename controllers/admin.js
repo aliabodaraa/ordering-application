@@ -2,6 +2,8 @@ const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    .select('title price -_id') //select title price and exclude _id from response
+    .populate('userId','name')//select name from nested user object response
     .then(products => {
       console.log("--result--",products)
       res.render('admin/products', {

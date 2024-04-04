@@ -13,10 +13,9 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use((req,res,next)=>{
-    console.log("aaaaaaaaaaaaaaaa")
     User.findById("660e95f4792fdba927b80abf").then(user=>{
         req.user=user;
-        console.log(user,"HEREEEEEEE")
+        // console.log(user,"HEREEEEEEE")
         next();
     }).catch(err=>console.log(err));
 })
