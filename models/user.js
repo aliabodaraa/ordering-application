@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectIdType=require('mongodb').ObjectId
+
 const userSchema= new Schema({
   name:{
     type:String,
@@ -42,6 +42,7 @@ userSchema.methods.removeFromCart = function(productId){
   this.cart.items=updatedCartItems;
   return this.save();
 }
+
 module.exports = mongoose.model('User',userSchema);
 // const mongodb=require('mongodb');
 // const { getDB } = require('../utils/database');
