@@ -30,7 +30,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'my secret',resave:false, saveUninitialized:false, store: store}));
 
 app.use((req, res, next) => {
-  User.findById('660e95f4792fdba927b80abf')
+  if(!req.session.user) return next();
+
+  User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
       next();
@@ -50,8 +52,8 @@ mongoose
     User.findOne().then(user => {
       if (!user) {
         const user = new User({
-          name: 'Max',
-          email: 'max@test.com',
+          name: 'Ali',
+          email: 'ali@abodaraa.com',
           cart: {
             items: []
           }
