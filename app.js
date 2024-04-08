@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next)=>{
-  // so for every request eill be executed, these fields will be set for views that are rendered 
+  // so for every request will be executed, these fields will be set for views that are rendered 
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = req.csrfToken();
   next();
