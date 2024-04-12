@@ -31,8 +31,9 @@ exports.postAddProduct = (req, res, next) => {
       validationErrors:errors.array()
     });
   }
-
+  //throw new Error("Sssss")//sync throw error that not embeded inside then or catch will directly go to error-handling-middleware iside them we need to call next(ny_error) to reach our error-handling-middlewre
   const product = new Product({
+    _id:"Aa", //cause an error deliberately
     title: title,
     price: price,
     description: description,
@@ -48,6 +49,9 @@ exports.postAddProduct = (req, res, next) => {
     })
     .catch(err => {
       console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -72,7 +76,12 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors:[]
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -108,7 +117,12 @@ exports.postEditProduct = (req, res, next) => {
       console.log('UPDATED PRODUCT!');
       res.redirect('/admin/products');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -133,5 +147,10 @@ exports.postDeleteProduct = (req, res, next) => {
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
