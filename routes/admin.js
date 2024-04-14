@@ -13,21 +13,22 @@ router.get('/add-product', isAuth, adminController.getAddProduct);
 router.get('/products',
 [
     body('title').isString().isLength({min:3}).trim(),
-    body('imageUrl').isURL(),
     body('price').isFloat(),
     body('description').isLength({min:5, max:400}).trim(),
 ]
 ,isAuth, adminController.getProducts);
 
+
 // /admin/add-product => POST
 router.post('/add-product', isAuth, adminController.postAddProduct);
-
+// router.use((req, res, next)=>{
+//     console.log(req.file)
+//       })
 router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
 
 router.post('/edit-product',
 [
     body('title').trim().isString().isLength({min:3}),
-    body('imageUrl').isURL(),
     body('price').isFloat(),
     body('description').trim().isLength({min:5, max:400}),
 ],

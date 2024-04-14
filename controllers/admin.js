@@ -14,10 +14,23 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
+  if(!image){//check if multer not decline the request's file
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/edit-product',
+      editing: false,
+      product: {title,price,description},
+      hasError: true,
+      errorMessage:"Attached file is not an image .",
+      validationErrors:[]
+    });
+  }
+  const imageUrl = image.path;
 
+  console.log(req.file,"-----------------")
   const errors = validationResult(req);
   if(!errors.isEmpty()){
     console.log(errors.array(),"-------")
@@ -33,11 +46,11 @@ exports.postAddProduct = (req, res, next) => {
   }
   //throw new Error("Sssss")//sync throw error that not embeded inside then or catch will directly go to error-handling-middleware iside them we need to call next(ny_error) to reach our error-handling-middlewre
   const product = new Product({
-    _id:"Aa", //cause an error deliberately
+    // _id:"Aa", //cause an error deliberately
     title: title,
     price: price,
     description: description,
-    imageUrl: imageUrl,
+    imageUrl,
     userId: req.user
   });
   product
@@ -66,6 +79,7 @@ exports.getEditProduct = (req, res, next) => {
       if (!product) {
         return res.redirect('/');
       }
+      console.log(product)
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
@@ -88,9 +102,10 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  // const updatedImageUrl = req.body.imageUrl;
+  const updatedImage = req.file;
   const updatedDesc = req.body.description;
-
+  console.log(updatedImage,"--------",req.file)
   const errors = validationResult(req);
   if(!errors.isEmpty()){
     console.log(errors.array(),"-------")
@@ -98,7 +113,7 @@ exports.postEditProduct = (req, res, next) => {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: true,
-      product: {title:updatedTitle,imageUrl:updatedImageUrl,price:updatedPrice,description:updatedDesc,_id:prodId},
+      product: {title:updatedTitle,price:updatedPrice,description:updatedDesc,_id:prodId},
       hasError: true,
       errorMessage:errors.array()[0].msg,
       validationErrors:errors.array()
@@ -110,7 +125,9 @@ exports.postEditProduct = (req, res, next) => {
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDesc;
-      product.imageUrl = updatedImageUrl;
+      if(image){
+        product.imageUrl=updatedImage.path
+      }
       return product.save();
     })
     .then(result => {

@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -115,3 +118,30 @@ exports.getOrders = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
+exports.getInvoice = (req, res, next)=>{
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+  .then(order=>{
+    if(!order){
+      return next(new Error('No Oeder Found.'))
+    }
+    if(order.user.userId.toString() !== req.user._id.toString()){
+      return next(new Error('UnAuthorized.'))
+    }
+    const invoiceName = 'invoice-' + orderId + '.pdf';
+    const invoicePath = path.join('public','invoices',invoiceName);
+    fs.readFile(invoicePath, (err, data)=>{//data here in a format of buffer
+      if(err){
+        return next(err);
+      }
+      res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
+      // res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);//define how this content should be serve to the client
+      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '";');
+      res.send(data)
+    });
+  }).catch(err=>{
+
+  })
+
+}

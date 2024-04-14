@@ -1,26 +1,47 @@
 const path = require('path');
 
 const express = require('express');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');//pasrse incoming requests as a url encoded data in (application/x-www-form-urlencoded) such as signup,login
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');//theis package will look to the existance of a csrf token in your view (request body) 
 const flash = require('connect-flash');
+const multer =  require('multer');        //pase incoming requests for files it is able to handle files (request with mixed data (text+file)) in (multipart/form-data) like add-product
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const app = express();
-
 const MONGODB_URI = "mongodb://localhost:27017/mongoose_test";
 
+const app = express();
 const store = new MongoDBStore({
   uri : MONGODB_URI,
   collection:'sessions'
 });
 
 const csrfProtection = csrf();//default will save the secret in session you can configure it to save the secret key in cookie
+
+const storage = multer.diskStorage({
+  destination:(req, file, cb)=>{
+    cb(null, './public/uploads');
+  },
+  filename:(req, file, cb)=>{
+    cb(null, new Date().toISOString() + '-' + file.originalname)
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -29,8 +50,13 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+
 app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(multer({dest:'images'}).single('image'));//dest make using binary data instead of buffer (it turn buffer back to binary data and store them in the path start with images directory), single to emphasize that there is on file comes with the request i can access it via "req.file"
+app.use(multer({dest:'./public/uploads'}).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use("/public/uploads",express.static(path.join(__dirname, 'public/uploads')));
+
 app.use(session({secret: 'my secret',resave:false, saveUninitialized:false, store: store}));
 app.use(csrfProtection);
 app.use(flash());
@@ -76,9 +102,9 @@ app.use((error, req, res, next)=>{//express is clever enough to detects that is 
   // res.redirect('/500');//inginite loop
   console.log(error)
   res.status(500).render('500', {
-    pageTitle: 'Error',
+    pageTitle: 'Error!',
     path: '/500',
-    isAuthenticated: req.session.isLoggedIn
+    isAuthenticated: false
   });
 });
 
