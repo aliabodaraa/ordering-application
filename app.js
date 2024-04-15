@@ -53,9 +53,9 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(multer({dest:'images'}).single('image'));//dest make using binary data instead of buffer (it turn buffer back to binary data and store them in the path start with images directory), single to emphasize that there is on file comes with the request i can access it via "req.file"
-app.use(multer({dest:'./public/uploads'}).single('image'));
+app.use(multer({dest:'./public/uploads',fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use("/public/uploads",express.static(path.join(__dirname, 'public/uploads')));
+app.use("/public/uploads",express.static(path.join(__dirname, 'public', 'uploads')));
 
 app.use(session({secret: 'my secret',resave:false, saveUninitialized:false, store: store}));
 app.use(csrfProtection);
