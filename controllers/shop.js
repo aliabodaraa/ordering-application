@@ -121,25 +121,21 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next)=>{
   const orderId = req.params.orderId;
-  Order.findById(orderId)
-  .then(order=>{
-    if(!order){
-      return next(new Error('No Oeder Found.'))
-    }
-    if(order.user.userId.toString() !== req.user._id.toString()){
-      return next(new Error('UnAuthorized.'))
-    }
+  Order.findById(orderId).then(order=>{
+    if(!order) return next(new Error('No Oeder Found.'))
+    if(order.user.userId.toString() !== req.user._id.toString()) return next(new Error('UnAuthorized.'))
     const invoiceName = 'invoice-' + orderId + '.pdf';
     const invoicePath = path.join('public','invoices',invoiceName);
-    fs.readFile(invoicePath, (err, data)=>{//data here in a format of buffer
-      if(err){
-        return next(err);
-      }
-      res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
-      // res.setHeader('Content-Disposition', `attachment; filename="${invoiceName}"`);//define how this content should be serve to the client
-      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '";');
-      res.send(data)
-    });
+    // fs.readFile(invoicePath, (err, data)=>{//data here in a format of buffer
+    //   if(err) return next(err);
+    //   res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
+    //   res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);//define how this content should be serve to the client
+    //   res.send(data)
+    // });
+    const file = fs.createReadStream(invoicePath);//read the file step by setp in a different chunks to avoid read the entire file into memory which ofcoures limited
+    res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
+    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);//define how this content should be serve to the client
+    file.pipe(res)//forward the data that read in that stream to my response, response object is writable stream ,that means the response will be streamed to the browser and will contain the data and the data will be downloaded by the browser step by step,with that we avoid to preload the entire file into memory and waiting for all chunks to come togethter and concatinate them into one object , we just streams it to the client on the fly (we forward them to the client(browser) which the later tens to concatinate incoming data pieces into the final file)
   }).catch(err=>{
 
   })
