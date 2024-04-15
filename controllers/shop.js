@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const PDFDocument = require('pdfkit');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -126,16 +128,17 @@ exports.getInvoice = (req, res, next)=>{
     if(order.user.userId.toString() !== req.user._id.toString()) return next(new Error('UnAuthorized.'))
     const invoiceName = 'invoice-' + orderId + '.pdf';
     const invoicePath = path.join('public','invoices',invoiceName);
-    // fs.readFile(invoicePath, (err, data)=>{//data here in a format of buffer
-    //   if(err) return next(err);
-    //   res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
-    //   res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);//define how this content should be serve to the client
-    //   res.send(data)
-    // });
-    const file = fs.createReadStream(invoicePath);//read the file step by setp in a different chunks to avoid read the entire file into memory which ofcoures limited
-    res.setHeader('Content-Type', 'application/pdf');//gives the browser some information, which allows it to handle dile and open it inline(in the browser)
-    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);//define how this content should be serve to the client
-    file.pipe(res)//forward the data that read in that stream to my response, response object is writable stream ,that means the response will be streamed to the browser and will contain the data and the data will be downloaded by the browser step by step,with that we avoid to preload the entire file into memory and waiting for all chunks to come togethter and concatinate them into one object , we just streams it to the client on the fly (we forward them to the client(browser) which the later tens to concatinate incoming data pieces into the final file)
+    
+    //create pdf using the package `pdfkit`
+    const pdfDoc = new PDFDocument();//generate pdf
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`);
+    pdfDoc.pipe(fs.createWriteStream(invoicePath));//ensure the pdf we generated get stored on the server
+    pdfDoc.pipe(res);
+
+    pdfDoc.text('Hello World');//allows us to add a single line of text into the pdfDocument
+    pdfDoc.end();//close all writable streams "res will be send and fs.createWriteStream(invoicePath) will be saved"
+    
   }).catch(err=>{
 
   })
