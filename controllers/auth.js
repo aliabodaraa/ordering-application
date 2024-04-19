@@ -7,7 +7,16 @@ const {validationResult} = require('express-validator/src')
 const User = require('../models/user');
 
 const transporter = nodemailer.createTransport({
-//....
+  service: 'gmail',
+  secure: false,
+  auth: {
+    //create new project in Google console to get clientSecret and clientId and accessToken https://developers.google.com/oauthplayground/
+    // type: 'OAuth2',
+    // user: "abodaraaali50@gmail.com",
+    // clientId: "---",
+    // clientSecret: "----",
+    // accessToken: "----"
+  }
 });
 
 exports.getLogin = (req, res, next) => {

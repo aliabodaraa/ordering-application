@@ -10,6 +10,8 @@ const flash = require('connect-flash');
 const multer =  require('multer');        //pase incoming requests for files it is able to handle files (request with mixed data (text+file)) in (multipart/form-data) like add-product
 
 const errorController = require('./controllers/error');
+const shopController = require('./controllers/shop');
+const isAuth = require('./middleware/is-auth');
 const User = require('./models/user');
 
 const MONGODB_URI = "mongodb://localhost:27017/mongoose_test";
@@ -58,14 +60,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/public/uploads",express.static(path.join(__dirname, 'public', 'uploads')));
 
 app.use(session({secret: 'my secret',resave:false, saveUninitialized:false, store: store}));
-app.use(csrfProtection);
+
 app.use(flash());
 
 
 app.use((req, res, next)=>{
   // so for every request will be executed, these fields will be set for views that are rendered 
   res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
+  // res.locals.csrfToken = req.csrfToken();
   next();
 });
 
@@ -88,6 +90,12 @@ app.use((req, res, next) => {
     });
 });
 
+app.post('/create-order', isAuth, shopController.postOrder);
+app.use(csrfProtection);
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -104,7 +112,7 @@ app.use((error, req, res, next)=>{//express is clever enough to detects that is 
   res.status(500).render('500', {
     pageTitle: 'Error!',
     path: '/500',
-    isAuthenticated: false
+    isAuthenticated: req.session.isLoggedIn
   });
 });
 
