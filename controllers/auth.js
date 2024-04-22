@@ -6,18 +6,17 @@ const {validationResult} = require('express-validator/src')
 
 const User = require('../models/user');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  secure: false,
-  auth: {
-    //create new project in Google console to get clientSecret and clientId and accessToken https://developers.google.com/oauthplayground/
-    // type: 'OAuth2',
-    // user: "abodaraaali50@gmail.com",
-    // clientId: "---",
-    // clientSecret: "----",
-    // accessToken: "----"
-  }
-});
+	const transporter = nodemailer.createTransport({
+	  service: 'gmail',
+	  secure: false,
+	  auth: {
+		type: 'OAuth2',
+		user: "abodaraaali50@gmail.com",
+		clientId: "186715807929-1e8t2rcbelk5nba4tiq45erv9rv4cqvp.apps.googleusercontent.com",
+		clientSecret: "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",
+		accessToken: "ya29.a0Ad52N3-DNrB4KltHgpiGpNLUbWvqIMdLgFj_236RUHMRQ8JiD5qpeZiF-Hk2Fv7Q2PY0YVigJvjCUYmnGqAgyrrclisMZdUsltc0BPZ4SUEjrTxQWXeTZQVae2Xt6hO2-U6iZeYJVDr0CQeoQ0VCSDFGkcLBhPHeui4xaCgYKATMSARMSFQHGX2MiINx11un54QPlts20MCWfRQ0171"
+	  }
+	});
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash('error');
